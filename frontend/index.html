@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integração Front-end e API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+        }
+        input {
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #resultado {
+            margin-top: 20px;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <h1>Formulário de Integração</h1>
+    <form id="formulario">
+        <input type="text" id="nome" placeholder="Digite seu nome" required>
+        <input type="email" id="email" placeholder="Digite seu email" required>
+        <button type="submit">Enviar</button>
+    </form>
+
+    <div id="resultado"></div>
+
+    <script>
+        // Captura o formulário
+        const form = document.getElementById('formulario');
+        const resultadoDiv = document.getElementById('resultado');
+
+        // Adiciona evento de submit
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evita recarregar a página
+
+            // Captura valores dos inputs
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+
+            try {
+                // Faz requisição POST para a API
+                const response = await fetch('http://localhost:3000/api/enviar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ nome, email })
+                });
+
+                // Converte resposta para JSON
+                const data = await response.json();
+
+                // Exibe resultado na tela
+                resultadoDiv.innerHTML = `
+                    <p>Status: ${data.status}</p>
+                    <p>Mensagem: ${data.mensagem}</p>
+                    <p>Nome: ${data.dadosRecebidos.nome}</p>
+                    <p>Email: ${data.dadosRecebidos.email}</p>
+                `;
+            } catch (error) {
+                resultadoDiv.innerHTML = `<p style="color:red;">Erro ao enviar dados!</p>`;
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
